@@ -232,6 +232,28 @@
         </li>
         {{/if}}
 
+        {{#if includedExternalDocPath}}
+            <li class="chapter">
+                <div class="simple">
+                    <span class="fa fa-book"></span>
+                    <span>{{includedExternalDocMenuName}}</span>
+                    <span class="menu-toggler fa fa-angle-up" data-toggle="collapse"
+                        {{#compare menu "===" 'normal' }}
+                            data-target="#ext-doc-links"
+                        {{else}}
+                            data-target="#xs-ext-doc-links"
+                        {{/compare}}></span>
+                </div>
+                <ul class="links collapse in"
+                    {{#compare menu "===" 'normal' }}
+                        id="ext-doc-links"
+                    {{else}}
+                        id="xs-ext-doc-links"
+                    {{/compare}}>
+                </ul>
+            </li>
+        {{/if}}
+
         {{#unless hideGenerator}}
         <li class="divider"></li>
         <li class="copyright">

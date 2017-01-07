@@ -37,6 +37,8 @@ interface IMainData {
     includes: boolean;
     includesName: string;
     disableSourceCode: boolean;
+    includedExternalDocPath: string;
+    includedExternalDocMenuName: string;
 }
 
 export interface IConfiguration {
@@ -72,7 +74,9 @@ export class Configuration implements IConfiguration {
         routes: [],
         tsconfig: '',
         includes: false,
-        disableSourceCode: COMPODOC_DEFAULTS.disableSourceCode
+        disableSourceCode: COMPODOC_DEFAULTS.disableSourceCode,
+        includedExternalDocPath: '',
+        includedExternalDocMenuName: COMPODOC_DEFAULTS.includedExternalDocMenuName
     };
 
     constructor() {

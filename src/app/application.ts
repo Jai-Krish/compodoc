@@ -15,6 +15,7 @@ import { Configuration, IConfiguration } from './configuration';
 import { DependenciesEngine } from './engines/dependencies.engine';
 import { NgdEngine } from './engines/ngd.engine';
 import { SearchEngine } from './engines/search.engine';
+import { GitbookEngine } from './engines/gitbook.engine';
 import { Dependencies } from './compiler/dependencies';
 
 import { COMPODOC_DEFAULTS } from '../utils/defaults';
@@ -26,6 +27,7 @@ let pkg = require('../package.json'),
     $markdownengine = new MarkdownEngine(),
     $ngdengine = new NgdEngine(),
     $searchEngine = new SearchEngine(),
+    $gitbookEngine = new GitbookEngine(),
     $dependenciesEngine,
     startTime = new Date();
 
@@ -372,9 +374,19 @@ export class Application {
         });
     }
 
+    closeGeneration() {
+        let finalTime = (new Date() - startTime) / 1000;
+        logger.info('Documentation generated in ' + this.configuration.mainData.output + ' in ' + finalTime + ' seconds using ' + this.configuration.mainData.theme + ' theme');
+        if (this.configuration.mainData.serve) {
+            logger.info(`Serving documentation from ${this.configuration.mainData.output} at http://127.0.0.1:${this.configuration.mainData.port}`);
+            this.runWebServer(this.configuration.mainData.output);
+        }
+    }
+
     processGraphs() {
         logger.info('Process main graph');
-        let modules = this.configuration.mainData.modules,
+        let that = this,
+            modules = this.configuration.mainData.modules,
             i = 0,
             len = modules.length,
             loop = () => {
@@ -392,11 +404,12 @@ export class Application {
                         logger.error(errorMessage);
                     });
                 } else {
-                    let finalTime = (new Date() - startTime) / 1000;
-                    logger.info('Documentation generated in ' + this.configuration.mainData.output + ' in ' + finalTime + ' seconds using ' + this.configuration.mainData.theme + ' theme');
-                    if (this.configuration.mainData.serve) {
-                        logger.info(`Serving documentation from ${this.configuration.mainData.output} at http://127.0.0.1:${this.configuration.mainData.port}`);
-                        this.runWebServer(this.configuration.mainData.output);
+                    if (that.configuration.mainData.includedExternalDocPath !== '' ) {
+                        this.processExternalDocumentation().then(() => {
+                            that.closeGeneration();
+                        })
+                    } else {
+                        that.closeGeneration();
                     }
                 }
             };
@@ -409,6 +422,18 @@ export class Application {
             loop();
         }, (err) => {
             logger.error('Error during graph generation: ', err);
+        });
+    }
+
+    processExternalDocumentation() {
+        logger.info('Process external documentation');
+        let that = this;
+        return new Promise(function(resolve, reject) {
+            $gitbookEngine.generate(that.configuration.mainData.includedExternalDocPath, path.resolve(that.configuration.mainData.output + '_book')).then(function() {
+                resolve();
+            }, function() {
+                reject('Error during additional doc generation');
+            });
         });
     }
 
