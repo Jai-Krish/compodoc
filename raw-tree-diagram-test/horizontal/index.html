@@ -12,6 +12,7 @@
 
             .node .icon {
                 font-size: 15px;
+                cursor: default;
             }
             .node .icon.has-children {
                 cursor: pointer;
@@ -134,13 +135,39 @@
                 .attr("y", function(d) {
                     return 15;
                 })
-                .style("fill", "white");
+                .style("fill", "white")
+                .style("fill-opacity", 0.75);
                 function getBB(selection) {
                     selection.each(function(d){d.bbox = this.getBBox();})
                 }
 
-
-
+                //
+                // Node lazy loaded ?
+                //
+                nodeEnter.append('svg:text')
+                .attr("y", function(d) {
+                    return 27;
+                })
+                .attr("x", function(d) {
+                    return -18;
+                })
+                .attr('font-family', 'FontAwesome')
+                .attr('class', function(d) {
+                    return "icon";
+                })
+                .attr('font-size', function(d) {
+                    return '15px'
+                }).text(function(d) {
+                    console.log(d);
+                    var _text = '';
+                    if (d.lazy) {
+                        _text = '\uf017';
+                    }
+                    if (d.guarded) {
+                        _text = '\uf023';
+                    }
+                    return _text;
+                });
 
                 // Transition nodes to their new position.
                 var nodeUpdate = node.transition().duration(duration).attr("transform", function(d) {
@@ -161,7 +188,6 @@
                 }).remove();
 
                 nodeExit.select("circle").attr("r", 1e-6);
-
                 nodeExit.select("text").style("fill-opacity", 1e-6);
 
                 // Update the links…

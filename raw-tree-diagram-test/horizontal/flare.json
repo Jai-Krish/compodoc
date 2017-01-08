@@ -10,21 +10,16 @@
         "name": "/about",
         "kind": "component",
         "className": "AboutComponent",
+        "lazy": true,
         "children": [{
             "name": "/todomvc",
+            "kind": "component",
             "className": "TodoMVCComponent"
         }, {
             "name": "/compodoc",
-            "className": "CompodocComponent"
-        }, {
-            "name": "/optimization",
-            "className": "OptimizationComponent"
-        }, {
-            "name": "/optimization",
-            "className": "OptimizationComponent"
-        }, {
-            "name": "/optimization",
-            "className": "OptimizationComponent"
+            "kind": "component",
+            "className": "CompodocComponent",
+            "guarded": true
         }]
     }]
 }
